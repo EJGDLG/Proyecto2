@@ -95,11 +95,31 @@ class Disk(Plane):
             return None
 
         contact = vector_subtract(plane_intercept.point, self.position)
-        contact = vector_norm(contact)
+        contact_length = vector_norm(contact)
 
-        if contact > self.radius:
+        # Verificar si el punto de contacto está dentro del radio del disco
+        if contact_length > self.radius:
             return None
-        return plane_intercept
+
+        # Cálculo de coordenadas de textura (u, v) en el disco
+        u = (contact[0] / self.radius) * 0.5 + 0.5  # Centro en 0.5
+        v = (contact[1] / self.radius) * 0.5 + 0.5  # Centro en 0.5
+
+        # Limitar las coordenadas UV para que estén en el rango [0, 1]
+        u = min(0.999, max(0, u))
+        v = min(0.999, max(0, v))
+
+        # Agregar las coordenadas de textura a la intersección
+        return Intercep(
+            point=plane_intercept.point,
+            normal=plane_intercept.normal,
+            distance=plane_intercept.distance,
+            texCoords=[u, v],
+            rayDirection=dir,
+            obj=self
+        )
+
+
 
 class SquarePlane(Plane):
     def __init__(self, position, normal, size, material):
@@ -261,32 +281,43 @@ class Ellipsoid(Shape):
         self.type = "Ellipsoid"
 
     def ray_intersect(self, orig, dir):
-        L = subtract(orig, self.position)
-        dir = [dir[i] / self.radii[i]**2 for i in range(3)]
-        L = [L[i] / self.radii[i]**2 for i in range(3)]
+        # Vector desde el origen del rayo hacia el centro del elipsoide
+        L = vector_subtract(orig, self.position)
         
-        a = dot(dir, dir)
-        b = 2 * dot(L, dir)
-        c = dot(L, L) - 1
-        discriminant = b**2 - 4*a*c
+        # Ajustar la dirección del rayo y el vector L
+        dir = [dir[i] / (self.radii[i] ** 2) for i in range(3)]
+        L = [L[i] / (self.radii[i] ** 2) for i in range(3)]
+        
+        # Coeficientes de la ecuación cuadrática
+        a = vector_dot(dir, dir)
+        b = 2 * vector_dot(L, dir)
+        c = vector_dot(L, L) - 1
+        
+        # Cálculo del discriminante
+        discriminant = b ** 2 - 4 * a * c
 
         if discriminant < 0:
-            return None
+            return None  # No hay intersección
         
+        # Calcular las soluciones de la ecuación cuadrática
         t0 = (-b - sqrt(discriminant)) / (2 * a)
         t1 = (-b + sqrt(discriminant)) / (2 * a)
 
         if t0 < 0:
             t0 = t1
         if t0 < 0:
-            return None
+            return None  # Ambas intersecciones están detrás del origen del rayo
         
-        P = vector_add(orig, multiply(t0, dir))
-        normal = subtract(P, self.position)
-        normal = normalize([normal[i] / self.radii[i]**2 for i in range(3)])
-
+        # Punto de intersección
+        P = vector_add(orig, vector_multiply(dir, t0))
+        
+        # Calcular la normal en el punto de intersección
+        normal = vector_subtract(P, self.position)
+        normal = normalize([normal[i] / (self.radii[i] ** 2) for i in range(3)])
+        
         # Cálculo de las coordenadas de textura
         u = 0.5 + (atan2(normal[2], normal[0]) / (2 * pi))
         v = 0.5 - (asin(normal[1]) / pi)
 
         return Intercep(point=P, normal=normal, distance=t0, texCoords=[u, v], rayDirection=dir, obj=self)
+

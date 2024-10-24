@@ -6,21 +6,21 @@ from material import *
 from lights import *
 from texture import Texture
 
-width = 1200
-height = 620
+width = 300
+height = 120
 
 screen = pygame.display.set_mode((width, height), pygame.SCALED)
 clock = pygame.time.Clock()
 
 rt = RendererRT(screen)
-rt.envMap = Texture("c:/Users/DeLeon/Desktop/TR2/Raytracer2024/Raytracer2024/City.bmp")
+rt.envMap = Texture("C:/Users/DeLeon/Documents/GitHub/Proyecto2/Raytracer2024/Raytracer2024/Recursos/lonemonk.bmp")
 
 # Materiales
-texture1  = Material(texture=Texture("c:/Users/DeLeon/Desktop/TR2/Raytracer2024/Raytracer2024/Texture1.bmp"))
-texture2  = Material(texture=Texture("c:/Users/DeLeon/Desktop/TR2/Raytracer2024/Raytracer2024/Texture2.bmp"), spec=128, ks=0.8, matType=REFLECTIVE)
+texture1  = Material(texture=Texture("C:/Users/DeLeon/Documents/GitHub/Proyecto2/Raytracer2024/Raytracer2024/Recursos/Texture1.bmp"))
+texture2  = Material(texture=Texture("C:/Users/DeLeon/Documents/GitHub/Proyecto2/Raytracer2024/Raytracer2024/Recursos/Texture2.bmp"), spec=128, ks=0.8, matType=REFLECTIVE)
 
-Lock1  = Material(texture=Texture("c:/Users/DeLeon/Desktop/TR2/Raytracer2024/Raytracer2024/Lock1.bmp"))
-Lock2  = Material(texture=Texture("c:/Users/DeLeon/Desktop/TR2/Raytracer2024/Raytracer2024/Lock2.bmp"), spec=128, ks=0.8, matType=REFLECTIVE)
+Lock1  = Material(texture=Texture("C:/Users/DeLeon/Documents/GitHub/Proyecto2/Raytracer2024/Raytracer2024/Recursos/Lock1.bmp"))
+Lock2  = Material(texture=Texture("C:/Users/DeLeon/Documents/GitHub/Proyecto2/Raytracer2024/Raytracer2024/Recursos/Lock2.bmp"), spec=128, ks=0.8, matType=REFLECTIVE)
 
 mirror = Material(diffuse=[0.9, 0.9, 0.6], spec=128, ks=0.2, matType=REFLECTIVE)
 blueMirror = Material(diffuse=[0.1, 0.9, 0.9], spec=128, ks=0.2, matType=TRANSPARENT)
@@ -52,7 +52,7 @@ rt.scene.append(Triangle(A=[-2.5, 3, -10], B=[2.5, 3, -10], C=[-1.5, 3, -6], mat
 rt.glRender()
 
 # Guardar la imagen como output.bmp
-pygame.image.save(screen, "C:/Users/DeLeon/Documents/GitHub/Lab3-Ray-Intersect/Raytracer2024/Raytracer2024/output4.bmp")
+pygame.image.save(screen, "C:/Users/DeLeon/Documents/GitHub/Proyecto2/Raytracer2024/Raytracer2024/output3.bmp")
 
 isRunning = True
 while isRunning:
